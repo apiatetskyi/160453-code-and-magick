@@ -180,7 +180,12 @@
     <p class="setup-similar-label">Петр Петров</p>
   </div>
 </template>
-
+<script>
+  var fireballSize = 30;
+  var getFireballSpeed = function(left) {
+    return left ? 5 : 2;
+  };
+</script>
 <script src="js/game.js"></script>
 
 </body>
