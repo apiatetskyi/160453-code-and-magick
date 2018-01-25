@@ -186,39 +186,39 @@
   var wizardWidth = 70;
 
   /**
-   * Определяет скорость фаербола относительно направления ветра
+   * Возвращает скорость фаербола в зависимости от направления ветра
    *
-   * @param  {Boolean} left Указывает направление ветра
-   * @return {Number}      Скорость фаербола
+   * @param  {boolean} left
+   * @return {number}
    */
   var getFireballSpeed = function(left) {
     return left ? 5 : 2;
   };
 
   /**
-   * Рассчитывает высоту мага в зависимости от его ширины
+   * Возвращает высоту мага в зависимости от его ширины
    *
-   * @return {Number} Высота мага
+   * @return {number}
    */
   var getWizardHeight = function() {
     return 1.337 * wizardWidth;
   };
 
   /**
-   * Начальное положения мага на оси X
+   * Возвращает начальную координату мага на оси X
    *
-   * @param  {Number} width Ширина игрового окна
-   * @return {Number}       Координата X
+   * @param  {number} width Ширина игрового окна
+   * @return {number}
    */
   var getWizardX = function(width) {
     return (width - wizardWidth) / 2;
   };
 
   /**
-   * Начальное положения мага на оси Y
+   * Возвращает начальную координату мага на оси Y
    *
-   * @param  {Number} height Высота игрового окна
-   * @return {Number}        Координата Y
+   * @param  {number} height Высота игрового окна
+   * @return {number}
    */
   var getWizardY = function(height) {
     return (height / 3) - getWizardHeight();
