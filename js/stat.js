@@ -10,25 +10,49 @@ var COL_HEIGHT = 150;
 var COL_GAP = 50;
 var COL_COLOR = 'rgba(255, 0, 0, 1)';
 
+/**
+ * Рендерит облако в указных координатах
+ * @param  {object} ctx
+ * @param  {number} x
+ * @param  {number} y
+ * @param  {string} color Цвет заливки
+ */
 var renderCloud = function (ctx, x, y, color) {
   ctx.fillStyle = color;
   ctx.fillRect(x, y, CLOUD_WIDTH, CLOUD_HEIGHT);
 };
 
+/**
+ * Рендерит строку по центру облака
+ * @param  {object} ctx
+ * @param  {string} text
+ * @param  {number} coordinateY Координата по оси Y с учетом CLOUD_Y
+ */
 var renderCenteredText = function (ctx, text, coordinateY) {
   var textWidth = ctx.measureText(text).width;
   var coordinateX = CLOUD_X + (CLOUD_WIDTH - textWidth) / 2;
+  coordinateY += CLOUD_Y;
 
   ctx.fillText(text, coordinateX, coordinateY);
 };
 
+/**
+ * Находит максимальное значение
+ * @param  {array} times
+ * @return {number}
+ */
 var getMaxValue = function (times) {
   return times.reduce(function (prev, current) {
     return Math.max(prev, current);
   }, 0);
 };
 
-
+/**
+ * Рендерит статистку проеденного уровня
+ * @param  {object} ctx
+ * @param  {array} names Имена игроков
+ * @param  {array} times Результаты игроков
+ */
 window.renderStatistics = function (ctx, names, times) {
   renderCloud(ctx, CLOUD_X + GAP, CLOUD_Y + GAP, 'rgba(0, 0, 0, .7)');
   renderCloud(ctx, CLOUD_X, CLOUD_Y, 'rgba(255, 255, 255, 1)');
