@@ -54,24 +54,28 @@ window.renderStatistics = function (ctx, names, times) {
   };
 
   /**
-   * Рендерит строку с возможностью выравнивания
-   * @param  {string} text
-   * @param  {number} coordinateY Координата по оси Y с учетом CloudProps.Y
-   * @param  {string} align
+   * Возвращает функцию с счетчиком строк
+   * @return {Function}
    */
-  var renderText = function (text, coordinateY, align) {
-    var textWidth = ctx.measureText(text).width;
-    var coordinateX = null;
-    if (!align || align === 'left') {
-      coordinateX = CloudProps.X + CloudProps.GAP;
-    } else if (align === 'center') {
-      coordinateX = CloudProps.X + (CloudProps.WIDTH - textWidth) / 2;
-    } else if (align === 'right') {
-      coordinateX = CloudProps.X + CloudProps.WIDTH - CloudProps.GAP - textWidth;
-    }
-    coordinateY += CloudProps.Y;
+  var renderText = function () {
+    var lineNo = 1;
+    return function (text, align) {
+      var textWidth = ctx.measureText(text).width;
+      var coordinateX = null;
+      var coordinateY = CloudProps.Y + CloudProps.FONT_GAP * lineNo;
 
-    ctx.fillText(text, coordinateX, coordinateY);
+      if (!align || align === 'left') {
+        coordinateX = CloudProps.X + CloudProps.GAP;
+      } else if (align === 'center') {
+        coordinateX = CloudProps.X + (CloudProps.WIDTH - textWidth) / 2;
+      } else if (align === 'right') {
+        coordinateX = CloudProps.X + CloudProps.WIDTH - CloudProps.GAP - textWidth;
+      }
+      coordinateY += CloudProps.Y;
+
+      ctx.fillText(text, coordinateX, coordinateY);
+      lineNo++;
+    };
   };
 
   /**
@@ -127,6 +131,7 @@ window.renderStatistics = function (ctx, names, times) {
   var startYCoordinates = columnHeights.map(function (columnHeight) {
     return CloudProps.HEIGHT + CloudProps.Y - CloudProps.GAP - CloudProps.FONT_GAP - columnHeight;
   });
+  var renderTitle = renderText();
 
   renderCloud(CloudProps.X + CloudProps.GAP, CloudProps.Y + CloudProps.GAP, CloudStyles.SHADOW_COLOR);
   renderCloud(CloudProps.X, CloudProps.Y, CloudStyles.BG_COLOR);
@@ -134,8 +139,8 @@ window.renderStatistics = function (ctx, names, times) {
   ctx.fillStyle = CloudStyles.FONT_COLOR;
   ctx.font = CloudStyles.FONT_SIZE + ' ' + CloudStyles.FONT_FAMILY;
 
-  renderText('Ура вы победили!', 36, 'center');
-  renderText('Список результатов:', 54, 'center');
+  renderTitle('Ура вы победили!', 'center');
+  renderTitle('Список результатов:', 'center');
 
   for (var columnIndex = 0; columnIndex < names.length; columnIndex++) {
     drawColumn(columnIndex);
