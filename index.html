@@ -182,7 +182,7 @@
 </template>
 <script>
   var fireballSize = 30;
-  var wizardSpeed = 3;
+  var wizardSpeed = 7;
   var wizardWidth = 70;
 
   /**
@@ -200,7 +200,7 @@
    *
    * @return {number}
    */
-  var getWizardHeight = function() {
+  var getWizardHeight = function () {
     return 1.337 * wizardWidth;
   };
 
@@ -210,7 +210,7 @@
    * @param  {number} width Ширина игрового окна
    * @return {number}
    */
-  var getWizardX = function(width) {
+  var getWizardX = function (width) {
     return (width - wizardWidth) / 2;
   };
 
@@ -220,10 +220,11 @@
    * @param  {number} height Высота игрового окна
    * @return {number}
    */
-  var getWizardY = function(height) {
+  var getWizardY = function (height) {
     return (height / 3) - getWizardHeight();
   };
 </script>
+<script src="js/stat.js"></script>
 <script src="js/game.js"></script>
 
 </body>
