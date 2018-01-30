@@ -3,7 +3,7 @@
 /**
  * Параметры облака статистики
  * @readonly
- * @enum {number}
+ * @enum {number} CloudProps
  */
 var CloudProps = {
   WIDTH: 420,
@@ -14,19 +14,32 @@ var CloudProps = {
   FONT_GAP: 20
 };
 
+/**
+ * Стилизация облака
+ * @readonly
+ * @enum {string} CloudStyles
+ */
 var CloudStyles = {
   BG_COLOR: 'rgba(255, 255, 255, 1)',
   SHADOW_COLOR: 'rgba(0, 0, 0, 0.7)',
-  CURRENT_PLAYER: 'rgba(255, 0, 0, 1)',
-  FONT_SIZE: '16',
-  FONT_FAMILY: 'PT Mono',
-  FONT_COLOR: 'rgba(0, 0, 0, 1)'
+  CURRENT_PLAYER: 'rgba(255, 0, 0, 1)'
 };
 
 /**
- * Параметры облака статистики
+ * Параметры шрифта
  * @readonly
- * @enum {number}
+ * @enum {string} FontStyles
+ */
+var FontStyles = {
+  SIZE: '16',
+  FAMILY: 'PT Mono',
+  COLOR: 'rgba(0, 0, 0, 1)'
+};
+
+/**
+ * Параметры колонок
+ * @readonly
+ * @enum {number} ColumnProps
  */
 var ColumnProps = {
   WIDTH: 40,
@@ -54,37 +67,23 @@ window.renderStatistics = function (ctx, names, times) {
   };
 
   /**
-   * Возвращает функцию с счетчиком строк
-   * @return {Function}
+   * Рендерит строку текста
+   * @param  {string} text
+   * @param  {number} coordinateY
+   * @param  {string} align       Выравнивание текста
    */
-  var renderText = function () {
-    var lineNo = 1;
-    return function (text, align) {
-      var textWidth = ctx.measureText(text).width;
-      var coordinateX = null;
-      var coordinateY = CloudProps.Y + CloudProps.FONT_GAP * lineNo;
-
-      if (!align || align === 'left') {
-        coordinateX = CloudProps.X + CloudProps.GAP;
-      } else if (align === 'center') {
-        coordinateX = CloudProps.X + (CloudProps.WIDTH - textWidth) / 2;
-      } else if (align === 'right') {
-        coordinateX = CloudProps.X + CloudProps.WIDTH - CloudProps.GAP - textWidth;
-      }
-      coordinateY += CloudProps.Y;
-
-      ctx.fillText(text, coordinateX, coordinateY);
-      lineNo++;
+  var renderText = function (text, coordinateY, align) {
+    var textWidth = ctx.measureText(text).width;
+    var aligment = {
+      left: CloudProps.X + CloudProps.GAP,
+      center: CloudProps.X + (CloudProps.WIDTH - textWidth) / 2,
+      right: CloudProps.X + CloudProps.WIDTH - CloudProps.GAP - textWidth,
+      default: CloudProps.X + CloudProps.GAP
     };
-  };
+    var coordinateX = aligment[align] || aligment['default'];
+    coordinateY = coordinateY + CloudProps.Y;
 
-  /**
-   * Находит максимальное значение в массиве
-   * @param  {Array} arr
-   * @return {number}
-   */
-  var getMaxValue = function (arr) {
-    return Math.max.apply(null, arr);
+    ctx.fillText(text, coordinateX, coordinateY);
   };
 
   /**
@@ -95,54 +94,51 @@ window.renderStatistics = function (ctx, names, times) {
    * @return {number}
    */
   var getRandom = function (precision, start, end) {
-    start = start || 0;
-    end = end || 1;
-    return (Math.random() * (end - start) + start).toFixed(precision);
+    start = (start) ? start : 0;
+    end = (end) ? end : 1;
+    return +(Math.random() * (end - start) + start).toFixed(precision);
   };
 
   /**
-   * Возвращает цвет в rgba с случайной прозрачностью
-   * @param  {number} r
-   * @param  {number} g
-   * @param  {number} b
+   * Возвращает синий цвет с случайной прозрачностью
    * @return {string}
    */
-  var getRandomOpacity = function (r, g, b) {
-    return 'rgba(' + r + ',' + g + ',' + b + ',' + getRandom(1, 0.2) + ')';
+  var getRandomBlue = function () {
+    return 'rgba(0, 0, 255,' + getRandom(1, 0.2) + ')';
   };
 
   /**
    * Рендерит колонку
    * @param  {number} columnIndex
+   * @param  {string} name Имя игрока
+   * @param  {number} time Результат игрока
    */
-  var drawColumn = function (columnIndex) {
-    ctx.fillStyle = (names[columnIndex] === 'Вы') ? CloudStyles.CURRENT_PLAYER : getRandomOpacity(0, 0, 255);
-    ctx.fillRect(startXCoordinate + (ColumnProps.WIDTH + ColumnProps.GAP) * columnIndex, startYCoordinates[columnIndex], ColumnProps.WIDTH, columnHeights[columnIndex]);
-    ctx.fillStyle = CloudStyles.FONT_COLOR;
-    ctx.fillText(names[columnIndex], startXCoordinate + (ColumnProps.WIDTH + ColumnProps.GAP) * columnIndex, CloudProps.Y + CloudProps.HEIGHT - CloudProps.GAP);
-    ctx.fillText(Math.round(times[columnIndex]), startXCoordinate + (ColumnProps.WIDTH + ColumnProps.GAP) * columnIndex, startYCoordinates[columnIndex] - CloudProps.GAP);
+  var drawColumn = function (columnIndex, name, time) {
+    var columnHeight = (ColumnProps.HEIGHT * time) / maxTime;
+    var columnY = CloudProps.HEIGHT + CloudProps.Y - CloudProps.GAP - CloudProps.FONT_GAP - columnHeight;
+    var columnX = startXCoordinate + (ColumnProps.WIDTH + ColumnProps.GAP) * columnIndex;
+
+    ctx.fillStyle = (name === 'Вы') ? CloudStyles.CURRENT_PLAYER : getRandomBlue();
+
+    ctx.fillRect(columnX, columnY, ColumnProps.WIDTH, columnHeight);
+    ctx.fillStyle = FontStyles.COLOR;
+    ctx.fillText(name, columnX, columnY + columnHeight + CloudProps.FONT_GAP);
+    ctx.fillText(Math.round(time), columnX, columnY - CloudProps.GAP);
   };
 
-  var maxTime = getMaxValue(times);
+  var maxTime = Math.max.apply(null, times);
   var startXCoordinate = CloudProps.X + (CloudProps.WIDTH - ColumnProps.WIDTH * ColumnProps.COUNT - ColumnProps.GAP * (ColumnProps.COUNT - 1)) / 2;
-  var columnHeights = times.map(function (time) {
-    return (ColumnProps.HEIGHT * time) / maxTime;
-  });
-  var startYCoordinates = columnHeights.map(function (columnHeight) {
-    return CloudProps.HEIGHT + CloudProps.Y - CloudProps.GAP - CloudProps.FONT_GAP - columnHeight;
-  });
-  var renderTitle = renderText();
 
   renderCloud(CloudProps.X + CloudProps.GAP, CloudProps.Y + CloudProps.GAP, CloudStyles.SHADOW_COLOR);
   renderCloud(CloudProps.X, CloudProps.Y, CloudStyles.BG_COLOR);
 
-  ctx.fillStyle = CloudStyles.FONT_COLOR;
-  ctx.font = CloudStyles.FONT_SIZE + ' ' + CloudStyles.FONT_FAMILY;
+  ctx.fillStyle = FontStyles.COLOR;
+  ctx.font = FontStyles.SIZE + ' ' + FontStyles.FAMILY;
 
-  renderTitle('Ура вы победили!', 'center');
-  renderTitle('Список результатов:', 'center');
+  renderText('Ура вы победили!', CloudProps.Y + CloudProps.GAP, 'center');
+  renderText('Список результатов:', CloudProps.Y + CloudProps.GAP + CloudProps.FONT_GAP, 'center');
 
-  for (var columnIndex = 0; columnIndex < names.length; columnIndex++) {
-    drawColumn(columnIndex);
+  for (var i = 0; i < names.length; i++) {
+    drawColumn(i, names[i], times[i]);
   }
 };
