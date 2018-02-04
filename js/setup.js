@@ -23,21 +23,21 @@ var WIZARD_PARAMS = {
 var WIZARD_NUMBER = 4;
 
 var setup = document.querySelector('.setup');
-var temaplate = document.querySelector('#similar-wizard-template').content;
+var template = document.querySelector('#similar-wizard-template').content;
 var similarContainer = setup.querySelector('.setup-similar');
 var similarList = setup.querySelector('.setup-similar-list');
 
 /**
  * Возвращает случайный элемент массива
  * @param  {Array} array
- * @return {string}
+ * @return {*}
  */
 var getRandomArrayElement = function (array) {
   return array[Math.floor(Math.random() * (array.length))];
 };
 
 /**
- * @typedef {Object} WizardSetup
+ * @typedef {Object} Wizard
  * @property {string} name Имя мага
  * @property {string} coatColor Цвет мантии мага
  * @property {string} eyesColor Цвет глаз мага
@@ -46,7 +46,7 @@ var getRandomArrayElement = function (array) {
 /**
  * Генерирует объект с случайными параметрами мага
  * @param  {Object} wizardParams
- * @return {WizardSetup}
+ * @return {Wizard}
  */
 var generateWizardSetup = function (wizardParams) {
   var wizardSetup = {
@@ -61,11 +61,11 @@ var generateWizardSetup = function (wizardParams) {
 
 /**
  * Создает мага на основе шаблона
- * @param  {WizardSetup} wizardSetup
+ * @param  {Wizard} wizardSetup
  * @return {Node}
  */
 var createWizard = function (wizardSetup) {
-  var wizardTemplate = temaplate.querySelector('.setup-similar-item').cloneNode(true);
+  var wizardTemplate = template.querySelector('.setup-similar-item').cloneNode(true);
 
   wizardTemplate.querySelector('.setup-similar-label').textContent = wizardSetup.name;
   wizardTemplate.querySelector('.wizard-coat').style.fill = wizardSetup.coatColor;
